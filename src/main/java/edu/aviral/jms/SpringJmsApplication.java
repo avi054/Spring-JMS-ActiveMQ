@@ -19,8 +19,8 @@ public class SpringJmsApplication implements CommandLineRunner {
 //	@Autowired
 //	private JmsTemplate jmsTemplate;
 	
-	@Autowired
-	private Sender sender;
+//	@Autowired
+//	private Sender sender;
 
 	public static void main(String[] args) {
 //		ConfigurableApplicationContext context = 
@@ -37,7 +37,7 @@ public class SpringJmsApplication implements CommandLineRunner {
 		
 //		jmsTemplate.convertAndSend(orderQueue, "Hello Again!");
 		
-		sender.sendMessage(orderQueue, "Hey there!!");
+//		sender.sendMessage(orderQueue, "Hey there!!");
 	}
 
 }
