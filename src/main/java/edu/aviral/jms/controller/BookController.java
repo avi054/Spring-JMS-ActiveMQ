@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.aviral.jms.pojo.Book;
 import edu.aviral.jms.pojo.BookOrder;
 import edu.aviral.jms.pojo.Customer;
-import edu.aviral.jms.service.BookService;
+import edu.aviral.jms.service.BookOrderSender;
 
 @RestController
 public class BookController {
 
 	@Autowired
-	private BookService bookService;
+	private BookOrderSender bookService;
 
 	List<Book> books = Arrays.asList(
 			new Book("bookId-1", "Let us C"), 

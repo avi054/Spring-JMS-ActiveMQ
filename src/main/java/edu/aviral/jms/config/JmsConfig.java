@@ -65,13 +65,19 @@ public class JmsConfig {
 //		return new JmsTemplate(connectionFactory());
 	}
 	*/
+	
+	
+	/**
+		Note: these are listener configurations
+	 */
 	// App will work even if DefaultJmsListenerContainerFactory is not defined.
 	@Bean
-	public DefaultJmsListenerContainerFactory containerFactory() {
-		DefaultJmsListenerContainerFactory containerFactory = new DefaultJmsListenerContainerFactory();
-		containerFactory.setConnectionFactory(connectionFactory());
-		containerFactory.setConcurrency("1-1");
-		return containerFactory;
+	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
+		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory());
+//		factory.setConcurrency("1-1");
+		factory.setMessageConverter(customMessageConverter());
+		return factory;
 	}
 	
 	
