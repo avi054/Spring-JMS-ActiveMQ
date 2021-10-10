@@ -8,15 +8,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
 
-@EnableJms
+import edu.aviral.jms.sender.Sender;
+
 @SpringBootApplication
 public class SpringJmsApplication implements CommandLineRunner {
 	
 	@Value("${ORDER_QUEUE}")
 	private String orderQueue;
 	
+//	@Autowired
+//	private JmsTemplate jmsTemplate;
+	
 	@Autowired
-	private JmsTemplate jmsTemplate;
+	private Sender sender;
 
 	public static void main(String[] args) {
 //		ConfigurableApplicationContext context = 
@@ -31,7 +35,9 @@ public class SpringJmsApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
-		jmsTemplate.convertAndSend(orderQueue, "Hello Again!");
+//		jmsTemplate.convertAndSend(orderQueue, "Hello Again!");
+		
+		sender.sendMessage(orderQueue, "Hey there!!");
 	}
 
 }
