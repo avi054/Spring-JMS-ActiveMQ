@@ -8,8 +8,11 @@ import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFac
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MarshallingMessageConverter;
@@ -17,13 +20,14 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
+import edu.aviral.jms.custommessagelistener.BookOrderProcessingMessageListener;
 import edu.aviral.jms.pojo.Book;
 import edu.aviral.jms.pojo.BookOrder;
 import edu.aviral.jms.pojo.Customer;
 
 @EnableJms
 @Configuration
-public class JmsConfig {
+public class JmsConfig implements JmsListenerConfigurer{
 	
 	@Value("${activeMq.username}")
 	private String userName;
@@ -114,6 +118,26 @@ public class JmsConfig {
 		XStreamMarshaller marshaller = new XStreamMarshaller();
 		marshaller.setSupportedClasses(Book.class, Customer.class, BookOrder.class);
 		return marshaller;
+	}
+
+	
+	// ************** Custom message listener ***********************//
+	
+	@Bean
+	public BookOrderProcessingMessageListener jmsMessageListener() {
+		return new BookOrderProcessingMessageListener();
+	}
+	
+	@Override
+	public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+		SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+		endpoint.setMessageListener(jmsMessageListener());
+		endpoint.setDestination("book.order.processed.queue");
+		endpoint.setConcurrency("1");
+		endpoint.setId("book-processed-id");
+		endpoint.setSubscription("my-subs");
+		registrar.setContainerFactory(jmsListenerContainerFactory());
+		registrar.registerEndpoint(endpoint, jmsListenerContainerFactory());
 	}
 	
 }
