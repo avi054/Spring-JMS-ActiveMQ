@@ -12,8 +12,14 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MarshallingMessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
+import org.springframework.oxm.xstream.XStreamMarshaller;
+
+import edu.aviral.jms.pojo.Book;
+import edu.aviral.jms.pojo.BookOrder;
+import edu.aviral.jms.pojo.Customer;
 
 @EnableJms
 @Configuration
@@ -76,16 +82,17 @@ public class JmsConfig {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory());
 //		factory.setConcurrency("1-1");
-		factory.setMessageConverter(customMessageConverter());
+//		factory.setMessageConverter(jacksonJmsMessageConverter());
+		factory.setMessageConverter(xmlMarshallingMesssgeConverter());
 		return factory;
 	}
 	
 	
 	// ##########  Spring by default makes available a SimpleMessageConvertor ############ //
 	
-	@Bean
-	public MessageConverter customMessageConverter() {
-		
+//	@Bean
+	public MessageConverter jacksonJmsMessageConverter() {
+// Serializes/deserializes messages to/from JSON format. 		
 		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
 		converter.setTargetType(MessageType.TEXT);
 		converter.setTypeIdPropertyName("_myType");
@@ -95,13 +102,18 @@ public class JmsConfig {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	@Bean
+	public MessageConverter xmlMarshallingMesssgeConverter() {
+		MarshallingMessageConverter converter = new MarshallingMessageConverter(xmlMarshaller());
+		converter.setTargetType(MessageType.TEXT);
+		return converter;
+	}
+
+	@Bean //other marshallers can also be used, here we are using xstreme
+	public XStreamMarshaller xmlMarshaller() {
+		XStreamMarshaller marshaller = new XStreamMarshaller();
+		marshaller.setSupportedClasses(Book.class, Customer.class, BookOrder.class);
+		return marshaller;
+	}
 	
 }
